@@ -1,0 +1,23 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: helloworld-cronjob
+  namespace: cronjobnamespace
+spec:
+  schedule: "*/2 * * * *"
+  successfulJobsHistoryLimit: 0 # Default is 3
+  failedJobsHistoryLimit: 0 # Default is 1
+  jobTemplate:
+    spec:
+#      completions: 5
+      parallelism: 1
+      backoffLimit: 3 # Max retry limit index starts from 0
+      template:
+        spec:
+          containers:
+          - name: busybox
+            image: busybox
+            command: ["sleep"]
+            args: ["15"]
+          restartPolicy: Never
+  concurrencyPolicy: Allow
