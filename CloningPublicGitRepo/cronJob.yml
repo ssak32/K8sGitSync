@@ -2,9 +2,9 @@ apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: helloworld-cronjob
-  namespace: cronjobnamespace
+#  namespace: cronjobnamespace
 spec:
-  schedule: "*/2 * * * *"
+  schedule: "*/1 * * * *"
   successfulJobsHistoryLimit: 0 # Default is 3
   failedJobsHistoryLimit: 0 # Default is 1
   jobTemplate:
@@ -14,10 +14,33 @@ spec:
       backoffLimit: 3 # Max retry limit index starts from 0
       template:
         spec:
+          initContainers:
+          # This container clones the desired git repo to the EmptyDir volume.
+          - name: git-clone
+            image: alpine/git # Any image with git will do
+            args:
+              - clone
+              - --single-branch
+              - --
+              - https://github.com/ssak32/K8sGitSync.git # Your repo
+              - /usr/src/app # Put it in the volume
+            securityContext:
+              runAsUser: 1 # Any non-root user will do. Match to the workload.
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+            volumeMounts:
+              - name: git-repo
+                mountPath: /usr/src/app
           containers:
           - name: busybox
             image: busybox
+            volumeMounts:
+              - name: git-repo
+                mountPath: /usr/src/app
             command: ["sleep"]
-            args: ["15"]
+            args: ["180"]
+          volumes:
+            - name: git-repo
+              emptyDir: {}
           restartPolicy: Never
   concurrencyPolicy: Allow

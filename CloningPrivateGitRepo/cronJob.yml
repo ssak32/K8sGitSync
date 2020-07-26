@@ -4,7 +4,7 @@ metadata:
   name: helloworld-cronjob
   namespace: cronjobnamespace
 spec:
-  schedule: "*/2 * * * *"
+  schedule: "*/5 * * * *"
   successfulJobsHistoryLimit: 0 # Default is 3
   failedJobsHistoryLimit: 0 # Default is 1
   jobTemplate:
@@ -18,6 +18,6 @@ spec:
           - name: busybox
             image: busybox
             command: ["sleep"]
-            args: ["15"]
-          restartPolicy: Never
+            args: ["180"]
+#          restartPolicy: Never
   concurrencyPolicy: Allow
