@@ -17,17 +17,19 @@ spec:
           initContainers:
           # This container clones the desired git repo to the EmptyDir volume.
           - name: git-clone
-            image: alpine/git # Any image with git will do
-            args:
-              - clone
-              - --single-branch
-              - --
-              - https://github.com/ssak32/K8sGitSync.git # Your repo
-              - /usr/src/app # Put it in the volume
-            securityContext:
-              runAsUser: 1 # Any non-root user will do. Match to the workload.
-              allowPrivilegeEscalation: false
-              readOnlyRootFilesystem: true
+            image: busybox # Any image with git will do
+            command: ["/bin/sh", "-c", "cd /usr/src/app && wget --header 'Authorization: token 3223b7ea06764b7d88f175508fc91a91022e5e9d' https://raw.githubusercontent.com/ssak32/WebScraping/master/Nodejs/DockerImages/Nodejs-Request-Cheerio/scrapeCraiglist.js"]
+
+#            args:
+#              - clone
+#              - --single-branch
+#              - --
+#              - https://github.com/ssak32/K8sGitSync.git # Your repo
+#              - /usr/src/app # Put it in the volume
+#            securityContext:
+#              runAsUser: 1 # Any non-root user will do. Match to the workload.
+#              allowPrivilegeEscalation: false
+#              readOnlyRootFilesystem: true
             volumeMounts:
               - name: git-repo
                 mountPath: /usr/src/app
